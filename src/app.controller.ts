@@ -1,6 +1,5 @@
 import { Get, Controller, Param, Res, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service';
-import {User} from './table/index';
 
 @Controller()
 export class AppController {
@@ -13,8 +12,7 @@ export class AppController {
   }
   @Get('/user')
   async haha() {
-    const users =  await User.findAll();
-    return users;
+    return 11;
     // res.status(200).json('haha');
   }
 }

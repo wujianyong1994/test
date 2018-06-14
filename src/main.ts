@@ -1,12 +1,12 @@
 import * as Db from './db';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import * as init from './initService';
+
 const config = require('../config.json')
 
 async function bootstrap() {
+  console.log('start nestjs');
   await Db.dbInit(config.db);
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3001);
+  init.init();
 
 }
 bootstrap();
