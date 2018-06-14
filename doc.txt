@@ -1,2 +1,5 @@
 nest:
 https://docs.nestjs.cn/5.0/firststeps
+table生成model
+https://www.npmjs.com/package/sequelize-auto
+例子: sequelize-auto -o "./models" -d test -h 111.230.41.81 -u root -p 3306 -x 123456 -e mysql
