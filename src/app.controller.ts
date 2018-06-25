@@ -6,12 +6,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  root(@Param() params): string {
+  async root(@Param() params) {
     // console.log(params.id);
-    return this.appService.root();
+    return await this.appService.root();
   }
   @Get('/user')
-  async haha() {
+  async user() {
     return 11;
     // res.status(200).json('haha');
   }
