@@ -1,11 +1,11 @@
 {
     "db": {
-            "host": "1",
+            "host": "111.230.41.81",
             "port": 3306,
             "dialect": "mysql",
             "database": "test",
-            "username": "",
-            "password": "",
+            "username": "root",
+            "password": "123456",
             "logging": true,
             "pool": {
                 "max": 5,
