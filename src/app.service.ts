@@ -6,6 +6,6 @@ export class AppService {
   async root() {
     const users =  await User.findAll();
     console.log(users);
-    return 'Hello World11133!';
+    return users;
   }
 }
