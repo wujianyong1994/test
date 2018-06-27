@@ -28,6 +28,7 @@ export class AppController {
       const timestamp = params.timestamp;
       const nonce = params.nonce;
       const echostr = params.echostr;
+      console.log(signature, timestamp, nonce, echostr);
       const TOKEN = 'hahaha'
       const array = [TOKEN, timestamp, nonce];
       const a = _.sortBy(array);
