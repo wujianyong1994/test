@@ -39,6 +39,7 @@ export class AppController {
       if (sign === signature) {
         R.status(HttpStatus.OK).json(true);
       }
+      R.status(HttpStatus.OK).json(true);
       // tslint:disable-next-line:max-line-length
       // https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxdd06f38bac305c95&secret=a202a88ea4b5ea8dbcc519af2997890e`, (res) => {
       // console.log('statusCode:', res.statusCode);
