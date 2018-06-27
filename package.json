@@ -24,6 +24,7 @@
     "@nestjs/websockets": "^5.0.0",
     "@types/sequelize": "^4.0.79",
     "ajv": "^6.5.1",
+    "crypto": "^1.0.1",
     "fastify-formbody": "^2.0.0",
     "fetch": "^1.1.0",
     "lodash": "^4.17.10",
