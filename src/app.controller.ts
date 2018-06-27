@@ -22,7 +22,8 @@ export class AppController {
     // res.status(200).json('haha');
   }
   @Get('/getToken')
-  getToken(@Res() R, @Query() params) {
+  async getToken(@Res() R, @Query() params) {
+      try{
       const signature = params.signature;
       const timestamp = params.timestamp;
       const nonce = params.nonce;
@@ -37,9 +38,13 @@ export class AppController {
       const sign = sha1.digest('hex');
       console.log(sign);
       if (sign === signature) {
-        R.status(HttpStatus.OK).json(echostr);
+        return R.status(HttpStatus.OK).json(echostr);
       }
-      R.status(HttpStatus.OK).json(false);
+      return R.status(HttpStatus.OK).json(false);
+      }catch (err) {
+        console.log(err); // 捕获错误
+      }
+      // R.status(HttpStatus.OK).json(false);
       // tslint:disable-next-line:max-line-length
       // https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxdd06f38bac305c95&secret=a202a88ea4b5ea8dbcc519af2997890e`, (res) => {
       // console.log('statusCode:', res.statusCode);
