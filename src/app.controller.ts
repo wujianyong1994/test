@@ -22,7 +22,7 @@ export class AppController {
     // res.status(200).json('haha');
   }
   @Get('/getToken')
-  async getToken(@Res() R, @Query() params) {
+  getToken(@Res() R, @Query() params) {
       const signature = params.signature;
       const timestamp = params.timestamp;
       const nonce = params.nonce;
