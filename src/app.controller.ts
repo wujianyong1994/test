@@ -9,11 +9,11 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  async root(@Query() params) {
-    console.log(params);
-    // console.log(params.id);
-    // res.status(HttpStatus.OK).json(await this.appService.root());
-    // console.log(333);
+  async root(@Res() res) {
+    return res.status(HttpStatus.OK).redirect('http://thebestguy.club:5000');
+  }
+  @Get('/user')
+  async getuser() {
     return await this.appService.root()
   }
   @Get('/getAccess_token')
