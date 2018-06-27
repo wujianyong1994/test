@@ -24,12 +24,10 @@ export class AppController {
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
       const signature = params.signature;
-      // const timestamp = params.timestamp;
-      // const nonce = params.nonce;
+      const timestamp = params.timestamp;
+      const nonce = params.nonce;
       const echostr = params.echostr;
       const TOKEN = 'hahaha'
-      const timestamp = '5';
-      const nonce = '2';
       const array = [TOKEN, timestamp, nonce];
       const a = _.sortBy(array);
       const clearText = a.join('');
