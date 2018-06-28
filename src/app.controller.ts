@@ -4,6 +4,8 @@ import * as https from 'https';
 import * as _ from 'lodash';
 import * as crypto from 'crypto';
 import {redis} from 'redis';
+const appid= 'wxdd06f38bac305c95';
+const secret = 'a202a88ea4b5ea8dbcc519af2997890e';
 
 @Controller()
 export class AppController {
@@ -11,8 +13,9 @@ export class AppController {
   async getBaseToken(){
     const token = await redis.get('baseToken');
     if (token === null) {
+      let r;
       // tslint:disable-next-line:max-line-length
-      https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxdd06f38bac305c95&secret=a202a88ea4b5ea8dbcc519af2997890e`, (res) => {
+      https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
       console.log('statusCode:', res.statusCode);
       console.log('headers:', res.headers);
       const buffers = [];
@@ -22,15 +25,17 @@ export class AppController {
       });
       res.on('end', (chunk) => {
         const wholeData = Buffer.concat(buffers);
-        R.status(HttpStatus.OK).json(JSON.parse(wholeData.toString()));
+        r = JSON.parse(wholeData.toString());
       });
 
       }).on('error', (e) => {
         console.error(e);
         return e;
       });
+      redis.set('baseToken',r.access_token,'EX',7000);
+      return r.access_token;
     }
-    redis.get();
+    return token;
   }
 
   // @Get()
@@ -50,8 +55,10 @@ export class AppController {
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
       const code = params.code;
+      let r;
+      //获取用户openid
       // tslint:disable-next-line:max-line-length
-      https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=wxdd06f38bac305c95&secret=a202a88ea4b5ea8dbcc519af2997890e&code=${code}&grant_type=authorization_code`, (res) => {
+      https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
       console.log('statusCode:', res.statusCode);
       console.log('headers:', res.headers);
       const buffers = [];
@@ -61,14 +68,35 @@ export class AppController {
       });
       res.on('end', (chunk) => {
         const wholeData = Buffer.concat(buffers);
-        R.status(HttpStatus.OK).json(JSON.parse(wholeData.toString()));
+        r = JSON.parse(wholeData.toString());
       });
 
       }).on('error', (e) => {
         console.error(e);
         return e;
       });
-    // res.status(200).json('haha');
+      const access_token = this.getBaseToken();
+      if (r && r.openid) {
+        //获取用户信息
+        https.get(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`, (res) => {
+        console.log('statusCode:', res.statusCode);
+        console.log('headers:', res.headers);
+        const buffers = [];
+        res.on('data', (d) => {
+          process.stdout.write(d);
+          buffers.push(d);
+        });
+        res.on('end', (chunk) => {
+          const wholeData = Buffer.concat(buffers);
+          return R.status(200).json(JSON.parse(wholeData.toString()));
+        });
+
+        }).on('error', (e) => {
+          console.error(e);
+          return e;
+        });
+      }
+      return R.status(200).json({success:false,msg:'用户查询失败'});
   }
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
@@ -94,25 +122,7 @@ export class AppController {
       }catch (err) {
         console.log(err); // 捕获错误
       }
-      // R.status(HttpStatus.OK).json(false);
-      // tslint:disable-next-line:max-line-length
-      // https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxdd06f38bac305c95&secret=a202a88ea4b5ea8dbcc519af2997890e`, (res) => {
-      // console.log('statusCode:', res.statusCode);
-      // console.log('headers:', res.headers);
-      // const buffers = [];
-      // res.on('data', (d) => {
-      //   // process.stdout.write(d);
-      //   buffers.push(d);
-      // });
-      // res.on('end', (chunk) => {
-      //   const wholeData = Buffer.concat(buffers);
-      //   R.status(HttpStatus.OK).json(JSON.parse(wholeData.toString()));
-      // });
-
-      // }).on('error', (e) => {
-      //   console.error(e);
-      //   return e;
-      // });
+    
 
   }
 
