@@ -76,7 +76,7 @@ export class AppController {
         console.error(e);
         return e;
       });
-      const access_token = this.getBaseToken();
+      const access_token =await this.getBaseToken();
       if (r && r.openid) {
         //获取用户信息
         https.get(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`, (res) => {
