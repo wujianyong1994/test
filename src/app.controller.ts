@@ -58,51 +58,15 @@ export class AppController {
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
       const code = params.code;
-      let r;
       const access_token =await this.getBaseToken();
-      console.log(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody());
-      return 1;
       //获取用户openid
-      // tslint:disable-next-line:max-line-length
-      await https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
-      console.log('statusCode:', res.statusCode);
-      console.log('headers:', res.headers);
-      const buffers = [];
-      res.on('data', (d) => {
-        process.stdout.write(d);
-        buffers.push(d);
-      });
-      res.on('end', (chunk) => {
-        const wholeData = Buffer.concat(buffers);
-        r = JSON.parse(wholeData.toString());
-        if (r && r.openid) {
-          //获取用户信息
-          console.log(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`);
-          https.get(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`, (res) => {
-          const buffers = [];
-          res.on('data', (d) => {
-            buffers.push(d);
-          });
-          res.on('end', (chunk) => {
-            const data = Buffer.concat(buffers);
-            console.log(JSON.parse(data.toString()));
-            return R.status(200).json(JSON.parse(data.toString()));
-          });
-  
-          }).on('error', (e) => {
-            console.error(e);
-            return R.status(200).json({success:false,msg:'用户查询失败'});
-          });
-        }
-        R.status(200).json({success:false,msg:'用户查询失败'})
-      });
-
-      }).on('error', (e) => {
-        console.error(e);
-        return R.status(200).json({success:false,msg:'用户查询失败'});;
-      });
-    
-      
+      const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
+      if (r && r.openid) {
+        //获取用户信息
+        const res = JSON.parse(request('GET', `https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`).getBody().toString());
+        return R.status(200).json(res)
+      }
+      return R.status(200).json({success:false,msg:'用户查询失败'});
   }
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
