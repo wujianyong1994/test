@@ -61,9 +61,11 @@ export class AppController {
       //const access_token =await this.getBaseToken();
       //获取用户openid
       const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
+      console.log(r);
       if (r && r.openid) {
         //获取用户信息
         const res = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/userinfo?access_token=${r.access_token}&openid=${r.openid}&lang=zh_CN`).getBody().toString());
+        console.log(res);
         return R.status(200).json(res)
       }
       return R.status(200).json({success:false,msg:'用户查询失败'});
