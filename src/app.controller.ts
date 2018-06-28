@@ -60,7 +60,7 @@ export class AppController {
       const code = params.code;
       let r;
       const access_token =await this.getBaseToken();
-      console.log(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`));
+      console.log(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).toString());
       return 1;
       //获取用户openid
       // tslint:disable-next-line:max-line-length
