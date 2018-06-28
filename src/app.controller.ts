@@ -26,15 +26,16 @@ export class AppController {
       res.on('end', (chunk) => {
         const wholeData = Buffer.concat(buffers);
         r = JSON.parse(wholeData.toString());
+        if (!r || !r.access_token) return '';
+        redis.set('baseToken',r.access_token,'EX',7000);
+        return r.access_token;
       });
 
       }).on('error', (e) => {
         console.error(e);
-        return e;
+        return '';
       });
-      if (!r || !r.access_token) return '';
-      redis.set('baseToken',r.access_token,'EX',7000);
-      return r.access_token;
+    
     }
     return token;
   }
@@ -78,6 +79,7 @@ export class AppController {
       });
       const access_token =await this.getBaseToken();
       console.log('r: ',r);
+      console.log('access_token: ',access_token);
       if (r && r.openid) {
         //获取用户信息
         console.log(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`);
