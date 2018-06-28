@@ -1,6 +1,7 @@
 import { Get, Controller, Param, Res, HttpStatus, Body, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import * as https from 'https';
+import request from 'sync-request';
 import * as _ from 'lodash';
 import * as crypto from 'crypto';
 import {redis} from 'redis';
@@ -59,6 +60,8 @@ export class AppController {
       const code = params.code;
       let r;
       const access_token =await this.getBaseToken();
+      console.log(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`));
+      return 1;
       //获取用户openid
       // tslint:disable-next-line:max-line-length
       await https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
