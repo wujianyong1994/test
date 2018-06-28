@@ -58,6 +58,7 @@ export class AppController {
   async getAccess_token(@Res() R, @Query() params) {
       const code = params.code;
       let r;
+      const access_token =await this.getBaseToken();
       //获取用户openid
       // tslint:disable-next-line:max-line-length
       await https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
@@ -71,37 +72,36 @@ export class AppController {
       res.on('end', (chunk) => {
         const wholeData = Buffer.concat(buffers);
         r = JSON.parse(wholeData.toString());
+        if (r && r.openid) {
+          //获取用户信息
+          console.log(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`);
+          https.get(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`, (res) => {
+          console.log('statusCode:', res.statusCode);
+          console.log('headers:', res.headers);
+          const buffers = [];
+          res.on('data', (d) => {
+            process.stdout.write(d);
+            buffers.push(d);
+          });
+          res.on('end', (chunk) => {
+            const wholeData = Buffer.concat(buffers);
+            return R.status(200).json(JSON.parse(wholeData.toString()));
+          });
+  
+          }).on('error', (e) => {
+            console.error(e);
+            return e;
+          });
+        }
+        return R.status(200).json({success:false,msg:'用户查询失败'});
       });
 
       }).on('error', (e) => {
         console.error(e);
-        return e;
+        return R.status(200).json({success:false,msg:'用户查询失败'});;
       });
-      const access_token =await this.getBaseToken();
-      console.log('r: ',r);
-      console.log('access_token: ',access_token);
-      if (r && r.openid) {
-        //获取用户信息
-        console.log(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`);
-        https.get(`https://api.weixin.qq.com/cgi-bin/user/info?access_token=${access_token}&openid=${r.openid}`, (res) => {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
-        const buffers = [];
-        res.on('data', (d) => {
-          process.stdout.write(d);
-          buffers.push(d);
-        });
-        res.on('end', (chunk) => {
-          const wholeData = Buffer.concat(buffers);
-          return R.status(200).json(JSON.parse(wholeData.toString()));
-        });
-
-        }).on('error', (e) => {
-          console.error(e);
-          return e;
-        });
-      }
-      return R.status(200).json({success:false,msg:'用户查询失败'});
+    
+      
   }
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
