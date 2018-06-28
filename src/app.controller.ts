@@ -15,7 +15,7 @@ export class AppController {
     if (token === null) {
       let r;
       // tslint:disable-next-line:max-line-length
-      https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
+      await https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
       console.log('statusCode:', res.statusCode);
       console.log('headers:', res.headers);
       const buffers = [];
@@ -32,6 +32,7 @@ export class AppController {
         console.error(e);
         return e;
       });
+      if (!r || !r.access_token) return '';
       redis.set('baseToken',r.access_token,'EX',7000);
       return r.access_token;
     }
@@ -58,7 +59,7 @@ export class AppController {
       let r;
       //获取用户openid
       // tslint:disable-next-line:max-line-length
-      https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
+      await https.get(`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`, (res) => {
       console.log('statusCode:', res.statusCode);
       console.log('headers:', res.headers);
       const buffers = [];
