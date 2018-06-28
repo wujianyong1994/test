@@ -27,6 +27,7 @@
     "crypto": "^1.0.1",
     "fastify-formbody": "^2.0.0",
     "fetch": "^1.1.0",
+    "ioredis": "^3.2.2",
     "lodash": "^4.17.10",
     "mysql2": "^1.5.3",
     "reflect-metadata": "^0.1.12",

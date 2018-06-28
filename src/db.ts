@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import {init} from 'table/index'
+
 let db: Sequelize.Sequelize ;
 async function dbInit(config: Sequelize.Options): Promise<boolean> {
     db = new Sequelize(config);
