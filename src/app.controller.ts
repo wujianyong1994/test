@@ -5,8 +5,9 @@ import request from 'sync-request';
 import * as _ from 'lodash';
 import * as crypto from 'crypto';
 import {redis} from 'redis';
-const appid= 'wxdd06f38bac305c95';
-const secret = 'a202a88ea4b5ea8dbcc519af2997890e';
+const config = require('../config.json')
+const appid = config.wx.appid;
+const secret = config.wx.secret;
 
 @Controller()
 export class AppController {
@@ -47,7 +48,6 @@ export class AppController {
   // }
   @Get('/user')
   async getuser() {
-    
     redis.set('key', 100, 'EX', 2);
     console.log(await redis.get('key'));
     setTimeout(async () => {
@@ -58,17 +58,19 @@ export class AppController {
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
       const code = params.code;
-      //const access_token =await this.getBaseToken();
-      //获取用户openid
+      // const access_token =await this.getBaseToken();
+      // 获取用户openid
+      // tslint:disable-next-line:max-line-length
       const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
       console.log(r);
       if (r && r.openid) {
-        //获取用户信息
+        // 获取用户信息
+        // tslint:disable-next-line:max-line-length
         const res = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/userinfo?access_token=${r.access_token}&openid=${r.openid}&lang=zh_CN`).getBody().toString());
         console.log(res);
         return R.status(200).json(res)
       }
-      return R.status(200).json({success:false,msg:'用户查询失败'});
+      return R.status(200).json({success: false, msg: '用户查询失败'});
   }
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
