@@ -1,4 +1,4 @@
-import { Get, Controller, Param, Res, HttpStatus, Body, Query } from '@nestjs/common';
+import { Get, Post, Controller, Param, Res, Req, HttpStatus, Body, Query, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import * as https from 'https';
 import request from 'sync-request';
@@ -8,7 +8,10 @@ import {redis} from 'redis';
 const config = require('../config.json')
 const appid = config.wx.appid;
 const secret = config.wx.secret;
+import {Dto} from './dto'
+import {AuthInterceptor} from './authInterceptor'
 
+@UseInterceptors(AuthInterceptor)
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -29,7 +32,7 @@ export class AppController {
         const wholeData = Buffer.concat(buffers);
         r = JSON.parse(wholeData.toString());
         if (!r || !r.access_token) return '';
-        redis.set('baseToken',r.access_token,'EX',7000);
+        redis.set('baseToken', r.access_token, 'EX', 7000);
         return r.access_token;
       });
 
@@ -37,15 +40,46 @@ export class AppController {
         console.error(e);
         return '';
       });
-    
+
     }
     return token;
   }
 
-  // @Get()
-  // async root(@Res() res) {
-  //   return res.status(HttpStatus.OK).redirect('http://thebestguy.club:5000');
-  // }
+  @Post('/login')
+  async login( @Req() req, @Res() res, @Body() body) {
+    const user = await this.appService.login(body);
+    const date = (new Date()).getTime();
+    const key = 'Session:' + date + ':' + user.loginName;
+    redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
+    return res.status(200).json({sid: key});
+  }
+  @Post('/addGroup')
+  async addGroup( @Req() req, @Res() res, @Body() body) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const r = await this.appService.addGroup(body, userId);
+    if (r) {
+      return res.status(200).json({success: true});
+    } else {
+      return res.status(200).json({success: false, msg: '新增失败'});
+    }
+  }
+  @Get('/listGroup')
+  async listGroup(@Req() req, @Query() params) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const pageIndex = 1;
+    const pageSize = 10;
+    const r = await this.appService.listGroup(userId, pageIndex, pageSize);
+    // return res.status(200).json({success: true, data: r});
+    return {success: true, data: r};
+  }
+  @Get('/testGet')
+  async testGet(  @Query() params) {
+    console.log('params', params);
+    // res.status(200).json({success: true});
+    return [122, 22];
+  }
   @Get('/user')
   async getuser() {
     redis.set('key', 100, 'EX', 2);
@@ -57,6 +91,7 @@ export class AppController {
   }
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
+      console.log(222222);
       const code = params.code;
       // const access_token =await this.getBaseToken();
       // 获取用户openid
@@ -96,9 +131,7 @@ export class AppController {
       }catch (err) {
         console.log(err); // 捕获错误
       }
-    
 
   }
 
-  
 }

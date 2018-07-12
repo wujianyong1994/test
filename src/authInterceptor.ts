@@ -1,0 +1,45 @@
+import { Interceptor, NestInterceptor, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
+import {User} from './table/index';
+import {redis} from 'redis';
+
+@Interceptor()
+export class AuthInterceptor implements NestInterceptor {
+    async intercept( context: ExecutionContext, stream$: Observable<any>): Observable<any> {
+    // console.log('Before...');
+    const now = Date.now();
+    if (context.getArgs()[0].url.indexOf('/login') < 0) {
+    // 获取res
+    try{
+        const res = context.getArgs()[0].res;
+        const sessionid = context.getArgs()[0].headers.sessionid;
+        console.log(sessionid)
+        const userId = await redis.get(sessionid);
+        console.log('userid' , userId);
+        if (!userId) {
+            res.status(401).json({status: 401});
+            return;
+            // return stream$.pipe();
+            // return stream$.subscribe(v => {console.log('1')});
+            // return (Observable.create(observer => {
+            //     observer.next(1);
+            // })).subscribe();
+        } else {
+            const user = await User.findById(userId);
+            console.log(user);
+            if (!user) {
+                res.status(401).json({status: 401});
+                // return;
+            }
+        }
+    }catch (err) {
+        console.log(err); // 捕获错误
+    }
+    }
+
+    return stream$.pipe(
+      tap(() => console.log(`After... ${Date.now() - now}ms`)),
+    );
+  }
+}
