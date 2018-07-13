@@ -9,7 +9,7 @@ export class AuthInterceptor implements NestInterceptor {
     async intercept( context: ExecutionContext, stream$: Observable<any>): Observable<any> {
     // console.log('Before...');
     const now = Date.now();
-    if (context.getArgs()[0].url.indexOf('/login') < 0) {
+    if (context.getArgs()[0].url.indexOf('/login') < 0 && context.getArgs()[0].url.indexOf('test') < 0) {
     // 获取res
     try{
         const res = context.getArgs()[0].res;
@@ -18,8 +18,11 @@ export class AuthInterceptor implements NestInterceptor {
         const userId = await redis.get(sessionid);
         console.log('userid' , userId);
         if (!userId) {
-            res.status(401).json({status: 401});
+            res.status(401).json({status: 401})
+            // res.status(302).location('http://192.168.2.115:3002/login').end();
+            // res.redirect(301, 'http://192.168.2.115:3002/login');
             return;
+            // return;
             // return stream$.pipe();
             // return stream$.subscribe(v => {console.log('1')});
             // return (Observable.create(observer => {
@@ -30,8 +33,11 @@ export class AuthInterceptor implements NestInterceptor {
             console.log(user);
             if (!user) {
                 res.status(401).json({status: 401});
-                // return;
+                // res.location('http://192.168.2.115:3002/login');
+                return;
             }
+            // 更新过期时间
+            redis.expire(sessionid, 1800);
         }
     }catch (err) {
         console.log(err); // 捕获错误

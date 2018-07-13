@@ -50,6 +50,24 @@ export class AppService {
     })
     return g;
   }
+  async listGroupDetail(userId, groupId){
+    const c = await Connect.findAll({
+      where: {
+        groupId
+      }
+    });
+    const userIds = _.map(c, 'userId');
+    if (!_.includes(userIds, Number(userId))) {
+      return 'error1'
+    }
+    const users = await User.findAll({
+      attributes: ['mobile', 'name'],
+      where: {
+        ID: userIds
+      }
+    })
+    return users;
+  }
 
   async getUserById(id: number) {
     const user = await User.findById(id);

@@ -68,17 +68,31 @@ export class AppController {
   async listGroup(@Req() req, @Query() params) {
     const sid = req.headers.sessionid;
     const userId = await redis.get(sid);
-    const pageIndex = 1;
+    const pageIndex = params.pageIndex;
     const pageSize = 10;
     const r = await this.appService.listGroup(userId, pageIndex, pageSize);
     // return res.status(200).json({success: true, data: r});
     return {success: true, data: r};
   }
+  @Get('/listGroupDetail')
+  async listGroupDetail(@Req() req, @Query() params) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    console.log(params);
+    const groupId = params.groupId;
+    const r = await this.appService.listGroupDetail(userId, groupId);
+    // return res.status(200).json({success: true, data: r});
+    if (r === 'error1') {
+      return {success: false}
+    }
+    return {success: true, data: r};
+  }
+
   @Get('/testGet')
-  async testGet(  @Query() params) {
+  async testGet(  @Query() params, @Res() res) {
     console.log('params', params);
-    // res.status(200).json({success: true});
-    return [122, 22];
+    return res.redirect('http://www.baidu.com');
+    // return [122, 22];
   }
   @Get('/user')
   async getuser() {
