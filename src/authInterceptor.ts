@@ -1,10 +1,10 @@
-import { Interceptor, NestInterceptor, ExecutionContext } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
 import {User} from './table/index';
 import {redis} from 'redis';
 
-@Interceptor()
+@Injectable()
 export class AuthInterceptor implements NestInterceptor {
     async intercept( context: ExecutionContext, stream$: Observable<any>): Observable<any> {
     // console.log('Before...');
