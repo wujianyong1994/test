@@ -11,116 +11,116 @@ const secret = config.wx.secret;
 import {Dto} from './dto'
 import {AuthInterceptor} from './authInterceptor'
 
-@UseInterceptors(AuthInterceptor)
+// @UseInterceptors(AuthInterceptor)
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  async getBaseToken(){
-    const token = await redis.get('baseToken');
-    if (token === null) {
-      let r;
-      // tslint:disable-next-line:max-line-length
-      await https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
-      console.log('statusCode:', res.statusCode);
-      console.log('headers:', res.headers);
-      const buffers = [];
-      res.on('data', (d) => {
-        // process.stdout.write(d);
-        buffers.push(d);
-      });
-      res.on('end', (chunk) => {
-        const wholeData = Buffer.concat(buffers);
-        r = JSON.parse(wholeData.toString());
-        if (!r || !r.access_token) return '';
-        redis.set('baseToken', r.access_token, 'EX', 7000);
-        return r.access_token;
-      });
+  // async getBaseToken(){
+  //   const token = await redis.get('baseToken');
+  //   if (token === null) {
+  //     let r;
+  //     // tslint:disable-next-line:max-line-length
+  //     await https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
+  //     console.log('statusCode:', res.statusCode);
+  //     console.log('headers:', res.headers);
+  //     const buffers = [];
+  //     res.on('data', (d) => {
+  //       // process.stdout.write(d);
+  //       buffers.push(d);
+  //     });
+  //     res.on('end', (chunk) => {
+  //       const wholeData = Buffer.concat(buffers);
+  //       r = JSON.parse(wholeData.toString());
+  //       if (!r || !r.access_token) return '';
+  //       redis.set('baseToken', r.access_token, 'EX', 7000);
+  //       return r.access_token;
+  //     });
 
-      }).on('error', (e) => {
-        console.error(e);
-        return '';
-      });
+  //     }).on('error', (e) => {
+  //       console.error(e);
+  //       return '';
+  //     });
 
-    }
-    return token;
-  }
+  //   }
+  //   return token;
+  // }
 
-  @Post('/login')
-  async login( @Req() req, @Res() res, @Body() body) {
-    const user = await this.appService.login(body);
-    const date = (new Date()).getTime();
-    const key = 'Session:' + date + ':' + user.loginName;
-    redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
-    return res.status(200).json({sid: key});
-  }
-  @Post('/addGroup')
-  async addGroup( @Req() req, @Res() res, @Body() body) {
-    const sid = req.headers.sessionid;
-    const userId = await redis.get(sid);
-    const r = await this.appService.addGroup(body, userId);
-    if (r) {
-      return res.status(200).json({success: true});
-    } else {
-      return res.status(200).json({success: false, msg: '新增失败'});
-    }
-  }
-  @Get('/listGroup')
-  async listGroup(@Req() req, @Query() params) {
-    const sid = req.headers.sessionid;
-    const userId = await redis.get(sid);
-    const pageIndex = params.pageIndex;
-    const pageSize = 10;
-    const r = await this.appService.listGroup(userId, pageIndex, pageSize);
-    // return res.status(200).json({success: true, data: r});
-    return {success: true, data: r};
-  }
-  @Get('/listGroupDetail')
-  async listGroupDetail(@Req() req, @Query() params) {
-    const sid = req.headers.sessionid;
-    const userId = await redis.get(sid);
-    console.log(params);
-    const groupId = params.groupId;
-    const r = await this.appService.listGroupDetail(userId, groupId);
-    // return res.status(200).json({success: true, data: r});
-    if (r === 'error1') {
-      return {success: false}
-    }
-    return {success: true, data: r};
-  }
+  // @Post('/login')
+  // async login( @Req() req, @Res() res, @Body() body) {
+  //   const user = await this.appService.login(body);
+  //   const date = (new Date()).getTime();
+  //   const key = 'Session:' + date + ':' + user.loginName;
+  //   redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
+  //   return res.status(200).json({sid: key});
+  // }
+  // @Post('/addGroup')
+  // async addGroup( @Req() req, @Res() res, @Body() body) {
+  //   const sid = req.headers.sessionid;
+  //   const userId = await redis.get(sid);
+  //   const r = await this.appService.addGroup(body, userId);
+  //   if (r) {
+  //     return res.status(200).json({success: true});
+  //   } else {
+  //     return res.status(200).json({success: false, msg: '新增失败'});
+  //   }
+  // }
+  // @Get('/listGroup')
+  // async listGroup(@Req() req, @Query() params) {
+  //   const sid = req.headers.sessionid;
+  //   const userId = await redis.get(sid);
+  //   const pageIndex = params.pageIndex;
+  //   const pageSize = 10;
+  //   const r = await this.appService.listGroup(userId, pageIndex, pageSize);
+  //   // return res.status(200).json({success: true, data: r});
+  //   return {success: true, data: r};
+  // }
+  // @Get('/listGroupDetail')
+  // async listGroupDetail(@Req() req, @Query() params) {
+  //   const sid = req.headers.sessionid;
+  //   const userId = await redis.get(sid);
+  //   console.log(params);
+  //   const groupId = params.groupId;
+  //   const r = await this.appService.listGroupDetail(userId, groupId);
+  //   // return res.status(200).json({success: true, data: r});
+  //   if (r === 'error1') {
+  //     return {success: false}
+  //   }
+  //   return {success: true, data: r};
+  // }
 
-  @Get('/testGet')
-  async testGet(  @Query() params, @Res() res) {
-    console.log('params', params);
-    return res.redirect('http://www.baidu.com');
-    // return [122, 22];
-  }
-  @Get('/user')
-  async getuser() {
-    redis.set('key', 100, 'EX', 2);
-    console.log(await redis.get('key'));
-    setTimeout(async () => {
-      console.log(await redis.get('key'))
-    }, 3000)
-    return await this.appService.root()
-  }
-  @Get('/getAccess_token')
-  async getAccess_token(@Res() R, @Query() params) {
-      console.log(222222);
-      const code = params.code;
-      // const access_token =await this.getBaseToken();
-      // 获取用户openid
-      // tslint:disable-next-line:max-line-length
-      const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
-      console.log(r);
-      if (r && r.openid) {
-        // 获取用户信息
-        // tslint:disable-next-line:max-line-length
-        const res = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/userinfo?access_token=${r.access_token}&openid=${r.openid}&lang=zh_CN`).getBody().toString());
-        console.log(res);
-        return R.status(200).json(res)
-      }
-      return R.status(200).json({success: false, msg: '用户查询失败'});
-  }
+  // @Get('/testGet')
+  // async testGet(  @Query() params, @Res() res) {
+  //   console.log('params', params);
+  //   return res.redirect('http://www.baidu.com');
+  //   // return [122, 22];
+  // }
+  // @Get('/user')
+  // async getuser() {
+  //   redis.set('key', 100, 'EX', 2);
+  //   console.log(await redis.get('key'));
+  //   setTimeout(async () => {
+  //     console.log(await redis.get('key'))
+  //   }, 3000)
+  //   return await this.appService.root()
+  // }
+  // @Get('/getAccess_token')
+  // async getAccess_token(@Res() R, @Query() params) {
+  //     console.log(222222);
+  //     const code = params.code;
+  //     // const access_token =await this.getBaseToken();
+  //     // 获取用户openid
+  //     // tslint:disable-next-line:max-line-length
+  //     const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
+  //     console.log(r);
+  //     if (r && r.openid) {
+  //       // 获取用户信息
+  //       // tslint:disable-next-line:max-line-length
+  //       const res = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/userinfo?access_token=${r.access_token}&openid=${r.openid}&lang=zh_CN`).getBody().toString());
+  //       console.log(res);
+  //       return R.status(200).json(res)
+  //     }
+  //     return R.status(200).json({success: false, msg: '用户查询失败'});
+  // }
   @Get('/getToken')
   async getToken(@Res() R, @Query() params) {
       try{
