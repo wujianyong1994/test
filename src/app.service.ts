@@ -60,7 +60,8 @@ export class AppService {
         province: wxUserInfo.province,
         city: wxUserInfo.city,
         country: wxUserInfo.country,
-        headimgurl: wxUserInfo.headimgurl
+        headimgurl: wxUserInfo.headimgurl,
+        name: wxUserInfo.nickname
       });
     }
     return user;
