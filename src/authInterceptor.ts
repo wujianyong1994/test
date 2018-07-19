@@ -6,7 +6,7 @@ import {redis} from 'redis';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
-    async intercept( context: ExecutionContext, stream$: Observable<any>): Observable<any> {
+    async intercept( context: ExecutionContext, stream$: Observable<any>) {
     // console.log('Before...');
     const now = Date.now();
     if (context.getArgs()[0].url.indexOf('/login') < 0 && context.getArgs()[0].url.indexOf('test') < 0) {
