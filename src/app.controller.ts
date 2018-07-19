@@ -105,7 +105,6 @@ export class AppController {
   }
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
-      console.log(222222);
       const code = params.code;
       // const access_token =await this.getBaseToken();
       // 获取用户openid
@@ -116,8 +115,12 @@ export class AppController {
         // 获取用户信息
         // tslint:disable-next-line:max-line-length
         const res = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/userinfo?access_token=${r.access_token}&openid=${r.openid}&lang=zh_CN`).getBody().toString());
+        const user = await this.appService.loginOrRegister(res);
         console.log(res);
-        return R.status(200).json(res)
+        const date = (new Date()).getTime();
+        const key = 'Session:' + date + ':' + user.loginName;
+        redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
+        return R.status(200).json({success: true, sid: key, nickname: user.nickname, headimgurl: user.headimgurl})
       }
       return R.status(200).json({success: false, msg: '用户查询失败'});
   }

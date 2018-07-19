@@ -50,6 +50,21 @@ export class AppService {
     })
     return g;
   }
+  async loginOrRegister(wxUserInfo){
+    let user = await User.findOne({where: {openid: wxUserInfo.openid}});
+    if (!user) {
+      user = await User.create({
+        nickname: wxUserInfo.nickname,
+        openid: wxUserInfo.openid,
+        sex: wxUserInfo.sex,
+        province: wxUserInfo.province,
+        city: wxUserInfo.city,
+        country: wxUserInfo.country,
+        headimgurl: wxUserInfo.headimgurl
+      });
+    }
+    return user;
+  }
   async listGroupDetail(userId, groupId){
     const c = await Connect.findAll({
       where: {
