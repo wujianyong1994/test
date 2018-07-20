@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import {redis} from 'redis';
 
 import {User, Group, Connect} from './table/index';
 
@@ -48,7 +49,31 @@ export class AppService {
         id: groupIds
       }
     })
-    return g;
+    const groups = JSON.parse(JSON.stringify(g));
+    const p = [];
+    groupIds.forEach( item => {
+      p.push(Connect.findAll({
+        where: {
+          groupId: item
+        }
+      }))
+    });
+    const pe = await Promise.all(p);
+    groupIds.forEach((item, index) => {
+      const userList = [];
+      pe[index].forEach(async c => {
+        let u = await redis.get('user:' + c.userId);
+        if (u) {
+          userList.push(JSON.parse(u));
+        } else {
+          u = await User.findOne({where: {ID: c.userId}})
+          userList.push(u);
+          redis.set('user:' + c.userId, JSON.stringify(u));
+        }
+      });
+      groups[index].users = userList;
+    })
+    return groups;
   }
   async loginOrRegister(wxUserInfo){
     let user = await User.findOne({where: {openid: wxUserInfo.openid}});
