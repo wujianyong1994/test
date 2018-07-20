@@ -59,9 +59,9 @@ export class AppService {
       }))
     });
     const pe = await Promise.all(p);
-    groupIds.forEach((item, index) => {
+    await groupIds.forEach(async (item, index) => {
       const userList = [];
-      pe[index].forEach(async c => {
+      await pe[index].forEach(async c => {
         let u = await redis.get('user:' + c.userId);
         if (u) {
           userList.push(JSON.parse(u));
@@ -71,6 +71,7 @@ export class AppService {
           redis.set('user:' + c.userId, JSON.stringify(u));
         }
       });
+      console.log(userList);
       groups[index].users = userList;
     })
     return groups;
