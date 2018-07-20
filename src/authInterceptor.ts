@@ -31,7 +31,6 @@ export class AuthInterceptor implements NestInterceptor {
             // })).subscribe();
         } else {
             const user = await User.findById(userId);
-            console.log(user);
             if (!user) {
                 res.status(401).json({status: 401});
                 // res.location('http://192.168.2.115:3002/login');

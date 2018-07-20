@@ -42,7 +42,6 @@ export class AppService {
       limit: pageSize,
       offset: (pageIndex - 1) * pageSize
     });
-    console.log(r);
     const groupIds = _.map(r, 'groupId');
     const g = await Group.findAll({
       where: {
@@ -59,10 +58,12 @@ export class AppService {
       }))
     });
     const pe = await Promise.all(p);
-    await groupIds.forEach(async (item, index) => {
+    let index = 0;
+    for (const item of groupIds){
       const userList = [];
-      await pe[index].forEach(async c => {
+      for (const c of pe[index]){
         let u = await redis.get('user:' + c.userId);
+        console.log('u:', u);
         if (u) {
           userList.push(JSON.parse(u));
         } else {
@@ -70,10 +71,11 @@ export class AppService {
           userList.push(u);
           redis.set('user:' + c.userId, JSON.stringify(u));
         }
-      });
+      }
       console.log(userList);
       groups[index].users = userList;
-    })
+      index++;
+    }
     return groups;
   }
   async loginOrRegister(wxUserInfo){
