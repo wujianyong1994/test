@@ -19,10 +19,7 @@ export class AppController {
     const token = await redis.get('baseToken');
     if (token === null) {
       let r;
-      // tslint:disable-next-line:max-line-length
       await https.get(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, (res) => {
-      console.log('statusCode:', res.statusCode);
-      console.log('headers:', res.headers);
       const buffers = [];
       res.on('data', (d) => {
         // process.stdout.write(d);
@@ -43,6 +40,19 @@ export class AppController {
 
     }
     return token;
+  }
+  async getJsApiTicket(){
+    const ticket = await redis.get('jsapi_ticket');
+    if (ticket === null) {
+      const access_token = await this.getBaseToken();
+      const jsapi = JSON.parse(request('GET', `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`).getBody().toString());
+      console.log('jsapi', jsapi);
+      if (jsapi && jsapi.ticket) {
+        redis.set('jsapi_ticket', jsapi.ticket, 'EX', 7000);
+      }
+      return jsapi.ticket;
+    }
+    return ticket;
   }
 
   @Post('/login')
@@ -103,12 +113,11 @@ export class AppController {
     }, 3000)
     return await this.appService.root()
   }
+  // 获取wx用户信息
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
       const code = params.code;
-      // const access_token =await this.getBaseToken();
       // 获取用户openid
-      // tslint:disable-next-line:max-line-length
       const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${appid}&secret=${secret}&code=${code}&grant_type=authorization_code`).getBody().toString());
       console.log(r);
       if (r && r.openid) {
@@ -120,6 +129,7 @@ export class AppController {
         const date = (new Date()).getTime();
         const key = 'Session:' + date + ':' + user.loginName;
         redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
+        this.getJsApiTicket();
         return R.status(200).json({success: true, sid: key, nickname: user.nickname, headimgurl: user.headimgurl})
       }
       return R.status(200).json({success: false, msg: '用户查询失败'});
