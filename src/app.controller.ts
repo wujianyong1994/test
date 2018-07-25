@@ -143,7 +143,7 @@ export class AppController {
   async getLoginUserInfo(@Req() req) {
     const sid = req.headers.sessionid;
     const userId = await redis.get(sid);
-    const user: any =  await this.appService.getUserById(userId);
+    const user: any =  await this.appService.getUserById(Number(userId));
     // redis.set('key', 100, 'EX', 2);
     return {
       nickname: user.nickname,
