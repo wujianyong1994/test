@@ -10,7 +10,7 @@ export class AuthInterceptor implements NestInterceptor {
     // console.log('Before...');
     const now = Date.now();
     const url = context.getArgs()[0].url;
-    if (url.indexOf('/login') < 0 && url.indexOf('getAccess_token') < 0) {
+    if (url.indexOf('/login') < 0 && url.indexOf('getAccess_token') < 0 && url.indexOf('testGet') < 0  && url.indexOf('getSign') < 0 ) {
     // 获取res
     try{
         const res = context.getArgs()[0].res;

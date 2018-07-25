@@ -54,6 +54,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     }
   }, {
-    tableName: 'user'
+    tableName: 'user',
+    charset: 'utf8',
   });
 };

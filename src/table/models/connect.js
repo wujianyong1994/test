@@ -22,6 +22,7 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: '0'
     }
   }, {
-    tableName: 'connect'
+    tableName: 'connect',
+    charset: 'utf8'
   });
 };

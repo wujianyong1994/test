@@ -1,5 +1,6 @@
 import { Get, Post, Controller, Param, Res, Req, HttpStatus, Body, Query, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
+import stringRandom from 'string-random'
 import * as https from 'https';
 import request from 'sync-request';
 import * as _ from 'lodash';
@@ -52,7 +53,31 @@ export class AppController {
       }
       return jsapi.ticket;
     }
+    console.log('jsapi_ticket', ticket);
     return ticket;
+  }
+  @Get('/getSign')
+  async getSign(@Query() param){
+    console.log(param);
+    const noncestr = stringRandom(16);
+    // tslint:disable-next-line:no-bitwise
+    const timestamp = 0 | ((new Date()).getTime() / 1000);
+    const url = param.url;
+    const jsapi_ticket = await this.getJsApiTicket();
+    const string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`;
+    const sha1 = crypto.createHash('sha1');
+    sha1.update(string1);
+    console.log( string1);
+    const signature = sha1.digest('hex');
+    console.log(signature);
+    return {
+    success: true,
+    data: {
+      nonceStr: noncestr,
+      timestamp,
+      signature
+      // url
+    }}
   }
 
   @Post('/login')
@@ -99,9 +124,10 @@ export class AppController {
   }
 
   @Get('/testGet')
-  async testGet(  @Query() params, @Res() res) {
+  async testGet(  @Query() params) {
     console.log('params', params);
-    return res.redirect('http://www.baidu.com');
+    console.log(stringRandom(16))
+    return stringRandom(16);
     // return [122, 22];
   }
   @Get('/user')
