@@ -139,6 +139,19 @@ export class AppController {
     }, 3000)
     return await this.appService.root()
   }
+  @Get('/getLoginUserInfo')
+  async getLoginUserInfo(@Req() req) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const user: any =  await this.appService.getUserById(userId);
+    // redis.set('key', 100, 'EX', 2);
+    return {
+      nickname: user.nickname,
+      realName: user.realName,
+      mobile: user.mobile
+    };
+  }
+
   // 获取wx用户信息
   @Get('/getAccess_token')
   async getAccess_token(@Res() R, @Query() params) {
