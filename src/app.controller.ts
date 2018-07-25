@@ -147,9 +147,20 @@ export class AppController {
     // redis.set('key', 100, 'EX', 2);
     return {
       nickname: user.nickname,
-      realName: user.realName,
+      name: user.name,
       mobile: user.mobile
     };
+  }
+  @Post('/updateUserInfo')
+  async updateUserInfo(@Req() req, @Body() body, @Res() res) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const r = await this.appService.updateUserInfo(body, userId);
+    if (r){
+      return res.status(200).json({success: true});
+    } else {
+      return res.status(200).json({success: false});
+    }
   }
 
   // 获取wx用户信息

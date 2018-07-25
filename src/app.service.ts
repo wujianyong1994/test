@@ -115,5 +115,9 @@ export class AppService {
 
   async getUserById(id: number) {
     const user = await User.findById(id);
+    return user;
+  }
+  async updateUserInfo(user, userId){
+    return await User.update(user, {where: {ID: userId}})
   }
 }
