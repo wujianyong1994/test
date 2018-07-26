@@ -57,12 +57,12 @@ export class AppController {
     return ticket;
   }
   @Get('/getSign')
-  async getSign(@Query() param){
-    console.log(param);
+  async getSign(@Query() param, @Req() req){
+    console.log('url: ', req.headers.referer);
     const noncestr = stringRandom(16);
     // tslint:disable-next-line:no-bitwise
     const timestamp = 0 | ((new Date()).getTime() / 1000);
-    const url = param.url;
+    const url = req.headers.referer
     const jsapi_ticket = await this.getJsApiTicket();
     const string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`;
     const sha1 = crypto.createHash('sha1');
