@@ -118,10 +118,15 @@ export class AppController {
     const r = await this.appService.listGroupDetail(userId, groupId);
     const group = await this.appService.getGroup( groupId);
     // return res.status(200).json({success: true, data: r});
-    if (r === 'error1') {
-      return {success: false}
-    }
-    return {success: true, data: r, groupName: group.name};
+    return {success: true, groupName: group.name, ...r};
+  }
+  @Get('/joinGroup')
+  async joinGroup(@Req() req, @Body() body) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const groupId = body.groupId;
+    const r = await this.appService.joinGroup(groupId, userId);
+    return {success: true, msg : r};
   }
 
   @Get('/testGet')

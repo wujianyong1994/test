@@ -100,9 +100,10 @@ export class AppService {
         groupId
       }
     });
+    let isInGroup = true;
     const userIds = _.map(c, 'userId');
     if (!_.includes(userIds, Number(userId))) {
-      return 'error1'
+      isInGroup = false
     }
     const users = await User.findAll({
       attributes: ['mobile', 'name'],
@@ -110,7 +111,17 @@ export class AppService {
         ID: userIds
       }
     })
-    return users;
+    return {data: users, isInGroup};
+  }
+  async joinGroup(groupId, userId){
+    if (await Connect.findAll({where: {groupId, userId}})) {
+      return '已经加入该通讯组'
+    }
+    const r = await Connect.create({
+      groupId,
+      userId
+    })
+    return '加入成功';
   }
   async getGroup(groupId){
     return await Group.findOne({
