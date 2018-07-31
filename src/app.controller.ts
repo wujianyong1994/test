@@ -116,11 +116,12 @@ export class AppController {
     console.log(params);
     const groupId = params.groupId;
     const r = await this.appService.listGroupDetail(userId, groupId);
+    const group = await this.appService.getGroup( groupId);
     // return res.status(200).json({success: true, data: r});
     if (r === 'error1') {
       return {success: false}
     }
-    return {success: true, data: r};
+    return {success: true, data: r, groupName: group.name};
   }
 
   @Get('/testGet')
