@@ -114,7 +114,8 @@ export class AppService {
     return {data: users, isInGroup};
   }
   async joinGroup(groupId, userId){
-    if (await Connect.findAll({where: {groupId, userId}})) {
+    const c = await Connect.findAll({where: {groupId, userId}});
+    if (c.length > 0) {
       return '已经加入该通讯组'
     }
     const r = await Connect.create({
