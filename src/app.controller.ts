@@ -120,7 +120,7 @@ export class AppController {
     // return res.status(200).json({success: true, data: r});
     return {success: true, groupName: group.name, ...r};
   }
-  @Get('/joinGroup')
+  @Post('/joinGroup')
   async joinGroup(@Req() req, @Body() body) {
     const sid = req.headers.sessionid;
     const userId = await redis.get(sid);
