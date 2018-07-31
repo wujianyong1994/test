@@ -112,7 +112,11 @@ export class AppService {
     })
     return users;
   }
-
+  async getGroup(groupId){
+    return await Group.findOne({
+      where: {id: groupId}
+    })
+  }
   async getUserById(id: number) {
     const user = await User.findById(id);
     return user;
