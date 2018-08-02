@@ -154,7 +154,8 @@ export class AppController {
     return {
       nickname: user.nickname,
       name: user.name,
-      mobile: user.mobile
+      mobile: user.mobile,
+      headimgurl: user.headimgurl
     };
   }
   @Post('/updateUserInfo')
