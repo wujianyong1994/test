@@ -223,6 +223,6 @@ export class AppController {
     const sid = req.headers.sessionid;
     const userId = await redis.get(sid);
     const r = await this.appService.delGroup(body.groupId, userId);
-    return r;
+    return res.status(200).json(r);
   }
 }
