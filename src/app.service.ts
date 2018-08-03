@@ -105,7 +105,7 @@ export class AppService {
     if (!_.includes(userIds, Number(userId))) {
       isInGroup = false
     }
-    const p = _.filter(c, item => (item.groupId === groupId && item.userId === Number(userId)));
+    const p = _.filter(c, item => (item.userId === Number(userId)));
     let isAdmin = false;
     if (p && p.length > 0 && p[0].isAdmin === 1 ) {
       isAdmin = true;
