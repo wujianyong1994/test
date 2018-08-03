@@ -218,4 +218,11 @@ export class AppController {
 
   }
 
+  @Post('/delGroup')
+  async delGroup(@Req() req, @Body() body, @Res() res) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const r = await this.appService.delGroup(body.groupId, userId);
+    return r;
+  }
 }

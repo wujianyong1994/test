@@ -136,4 +136,17 @@ export class AppService {
   async updateUserInfo(user, userId){
     return await User.update(user, {where: {ID: userId}})
   }
+  async delGroup(groupId, userId){
+    const group = await Group.findOne({where: {id: groupId} });
+    if (!group) {
+      return {success: false, msg: '删除失败,该通讯组不存在'}
+    }
+    const connect = await Connect.findOne({where: {groupId, userId}});
+    if (!connect || connect.isAdmin === 0) {
+      return {success: false, msg: '删除失败,您不是该组管理员'};
+    }
+    const r = await Group.destroy({where: {id: groupId}});
+    const c = await Connect.destroy({where: {groupId}});
+    return {success: true};
+  }
 }
