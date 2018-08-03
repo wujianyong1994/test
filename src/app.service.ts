@@ -49,33 +49,33 @@ export class AppService {
       }
     })
     const groups = JSON.parse(JSON.stringify(g));
-    const p = [];
-    groupIds.forEach( item => {
-      p.push(Connect.findAll({
-        where: {
-          groupId: item
-        }
-      }))
-    });
-    const pe = await Promise.all(p);
-    let index = 0;
-    for (const item of groupIds){
-      const userList = [];
-      for (const c of pe[index]){
-        let u = await redis.get('user:' + c.userId);
-        console.log('u:', u);
-        if (u) {
-          userList.push(JSON.parse(u));
-        } else {
-          u = await User.findOne({where: {ID: c.userId}})
-          userList.push(u);
-          redis.set('user:' + c.userId, JSON.stringify(u));
-        }
-      }
-      console.log(userList);
-      groups[index].users = userList;
-      index++;
-    }
+    // const p = [];
+    // groupIds.forEach( item => {
+    //   p.push(Connect.findAll({
+    //     where: {
+    //       groupId: item
+    //     }
+    //   }))
+    // });
+    // const pe = await Promise.all(p);
+    // let index = 0;
+    // for (const item of groupIds){
+    //   const userList = [];
+    //   for (const c of pe[index]){
+    //     let u = await redis.get('user:' + c.userId);
+    //     console.log('u:', u);
+    //     if (u) {
+    //       userList.push(JSON.parse(u));
+    //     } else {
+    //       u = await User.findOne({where: {ID: c.userId}})
+    //       userList.push(u);
+    //       redis.set('user:' + c.userId, JSON.stringify(u));
+    //     }
+    //   }
+    //   console.log(userList);
+    //   groups[index].users = userList;
+    //   index++;
+    // }
     return groups;
   }
   async loginOrRegister(wxUserInfo){
