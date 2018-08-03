@@ -105,13 +105,18 @@ export class AppService {
     if (!_.includes(userIds, Number(userId))) {
       isInGroup = false
     }
+    const p = _.filter(c, item => (item.groupId === groupId && item.userId === Number(userId)));
+    let isAdmin = false;
+    if (p && p.length > 0 && p[0].isAdmin === 1 ) {
+      isAdmin = true;
+    }
     const users = await User.findAll({
       attributes: ['mobile', 'name'],
       where: {
         ID: userIds
       }
     })
-    return {data: users, isInGroup};
+    return {data: users, isInGroup, isAdmin};
   }
   async joinGroup(groupId, userId){
     const c = await Connect.findAll({where: {groupId, userId}});
