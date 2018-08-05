@@ -225,4 +225,12 @@ export class AppController {
     const r = await this.appService.delGroup(body.groupId, userId);
     return res.status(200).json(r);
   }
+  @Post('/kickUser')
+  async kickUser(@Req() req, @Body() body, @Res() res) {
+    const sid = req.headers.sessionid;
+    const userId = await redis.get(sid);
+    const r = await this.appService.kickUser(body.groupId, body.userId, userId);
+    return res.status(200).json(r);
+  }
+
 }

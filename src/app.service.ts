@@ -111,7 +111,7 @@ export class AppService {
       isAdmin = true;
     }
     const users = await User.findAll({
-      attributes: ['mobile', 'name'],
+      attributes: ['mobile', 'name', 'ID'],
       where: {
         ID: userIds
       }
@@ -153,5 +153,21 @@ export class AppService {
     const r = await Group.destroy({where: {id: groupId}});
     const c = await Connect.destroy({where: {groupId}});
     return {success: true};
+  }
+
+  async kickUser(groupId, userId, operId){
+    const group = await Group.findOne({where: {id: groupId} });
+    if (!group) {
+      return {success: false, msg: '该通讯组不存在'}
+    }
+    const connect = await Connect.findOne({where: {groupId, operId}});
+    if (!connect || connect.isAdmin === 0) {
+      return {success: false, msg: '踢出失败,您不是该组管理员'};
+    }
+    if (userId === operId) {
+      return {success: false, msg: '不可以删除自己'}
+    }
+    const c = await Connect.destroy({where: { groupId, userId}})
+    return {success: true}
   }
 }
