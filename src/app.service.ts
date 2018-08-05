@@ -160,7 +160,7 @@ export class AppService {
     if (!group) {
       return {success: false, msg: '该通讯组不存在'}
     }
-    const connect = await Connect.findOne({where: {groupId, operId}});
+    const connect = await Connect.findOne({where: {groupId, userId:operId}});
     if (!connect || connect.isAdmin === 0) {
       return {success: false, msg: '踢出失败,您不是该组管理员'};
     }
