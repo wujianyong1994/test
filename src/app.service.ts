@@ -37,12 +37,12 @@ export class AppService {
     return r;
   }
   async listGroup(userId, pageIndex, pageSize){
-    const r = await Connect.findAll({
+    const {rows, count} = await Connect.findAndCountAll({
       where: {userId},
       limit: pageSize,
       offset: (pageIndex - 1) * pageSize
     });
-    const groupIds = _.map(r, 'groupId');
+    const groupIds = _.map(rows, 'groupId');
     const g = await Group.findAll({
       where: {
         id: groupIds
@@ -76,7 +76,7 @@ export class AppService {
     //   groups[index].users = userList;
     //   index++;
     // }
-    return groups;
+    return {groups, totalPage: count};
   }
   async loginOrRegister(wxUserInfo){
     let user = await User.findOne({where: {openid: wxUserInfo.openid}});

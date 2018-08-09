@@ -9,6 +9,8 @@ import {redis} from 'redis';
 const config = require('../config.json')
 const appid = config.wx.appid;
 const secret = config.wx.secret;
+const weappid = config.wx.weappid;
+const wesecret = config.wx.wesecret;
 import {Dto} from './dto'
 import {AuthInterceptor} from './authInterceptor'
 
@@ -107,7 +109,7 @@ export class AppController {
     const pageSize = 10;
     const r = await this.appService.listGroup(userId, pageIndex, pageSize);
     // return res.status(200).json({success: true, data: r});
-    return {success: true, data: r};
+    return {success: true, data: r.groups, totalPage: Math.ceil(r.totalPage / pageSize)};
   }
   @Get('/listGroupDetail')
   async listGroupDetail(@Req() req, @Query() params) {
@@ -232,5 +234,31 @@ export class AppController {
     const r = await this.appService.kickUser(body.groupId, body.userId, userId);
     return res.status(200).json(r);
   }
-
+   // 获取wx用户信息
+   @Post('/weAppLogin')
+   async weAppLogin(@Res() R, @Body() body) {
+    console.log(body);
+    const code = body.code;
+    // 获取用户openid
+    const r = JSON.parse(request('GET', `https://api.weixin.qq.com/sns/jscode2session?appid=${weappid}&secret=${wesecret}&js_code=${code}&grant_type=authorization_code`).getBody().toString());
+    console.log(r);
+    if (r && r.openid) {
+      const userInfo = {
+        nickname: body.nickName,
+        sex: body.gender,
+        city: body.city,
+        province: body.province,
+        country: body.country,
+        headimgurl: body.avatarUrl,
+        name: body.nickname,
+        openid: r.openid
+      }
+      const user = await this.appService.loginOrRegister(userInfo);
+      const date = (new Date()).getTime();
+      const key = 'Session:' + date + ':' + user.loginName;
+      redis.set('Session:' + date + ':' + user.loginName, user.ID, 'EX', 1800);
+      return R.status(200).json({success: true, sid: key})
+    }
+    return R.status(200).json({success: false})
+   }
 }
