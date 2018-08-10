@@ -26,7 +26,7 @@ export class AppService {
     console.log(body);
     const r = await Group.create({
       name: body.name,
-      createTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+      createTime: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
       createUserId: userId
     })
     const c = await Connect.create({
