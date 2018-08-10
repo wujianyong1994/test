@@ -164,7 +164,7 @@ export class AppService {
     if (!connect || connect.isAdmin === 0) {
       return {success: false, msg: '踢出失败,您不是该组管理员'};
     }
-    if (userId === operId) {
+    if (Number(userId) === Number(operId)) {
       return {success: false, msg: '不可以删除自己'}
     }
     const c = await Connect.destroy({where: { groupId, userId}})
