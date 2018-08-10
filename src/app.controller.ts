@@ -261,4 +261,13 @@ export class AppController {
     }
     return R.status(200).json({success: false})
    }
+
+    @Get('/exitGroup')
+    async exitGroup( @Req() req, @Query() params) {
+      const sid = req.headers.sessionid;
+      const userId = await redis.get(sid);
+      const groupId = params.groupId;
+      const r = await this.appService.exitGroup(groupId, userId)
+      return r;
+    }
 }

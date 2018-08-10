@@ -170,4 +170,15 @@ export class AppService {
     const c = await Connect.destroy({where: { groupId, userId}})
     return {success: true}
   }
+
+  async exitGroup(groupId, userId){
+    const c = await Connect.findOne({
+      where: {groupId, userId}
+    });
+    if (!c) return {success: false};
+    await Connect.destroy({
+      where: {groupId, userId}
+    })
+    return {success: true};
+  }
 }
