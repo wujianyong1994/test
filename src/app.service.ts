@@ -23,7 +23,9 @@ export class AppService {
     return user;
   }
   async addGroup(body, userId) {
-    console.log(body);
+    console.log(moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'))
+    console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
+    console.log(moment().utcOffset(480).format('YYYY-MM-DD HH:mm:ss'))
     const r = await Group.create({
       name: body.name,
       createTime: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
