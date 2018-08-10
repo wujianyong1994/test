@@ -176,6 +176,9 @@ export class AppService {
       where: {groupId, userId}
     });
     if (!c) return {success: false};
+    if (c.isAdmin === 1) {
+      return {success: false, msg: '管理员不能退出'}
+    }
     await Connect.destroy({
       where: {groupId, userId}
     })
