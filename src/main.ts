@@ -7,8 +7,8 @@ const config = require('../config.json')
 async function bootstrap() {
   console.log('start nestjs');
   await Db.dbInit(config.db);
-  // init.initHttps();
-  await init.init();
+  init.initHttps();
+  // await init.init();
   // init.socket()
 }
 bootstrap();
