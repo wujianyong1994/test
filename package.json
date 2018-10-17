@@ -34,6 +34,8 @@
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.2.1",
     "sequelize": "^4.28.6",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
     "string-random": "^0.1.0",
     "sync-request": "^6.0.0",
     "typescript": "^2.6.2",

@@ -186,4 +186,17 @@ export class AppService {
     })
     return {success: true};
   }
+
+  async regist(userName){
+    const user = await User.findOne({where: {loginName: userName}});
+    if (user) {
+      return {success: false, msg: '该用户已存在'};
+    } else {
+      const r = await User.create({
+        loginName: userName,
+        name: userName
+      });
+      return {success: true}
+    }
+  }
 }

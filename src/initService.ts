@@ -4,21 +4,14 @@ import * as express from 'express'
 import * as fs from 'fs'
 import * as http from 'http'
 import * as https from 'https'
+const apps =  require('express')();
+const server = require('http').Server(apps);
+const io = require('socket.io')(server, {path: '/room'});
 
 export async function init(){
-    // const httpsOptions = {
-    //     key: fs.readFileSync('./secrets/private-key.pem'),
-    //     cert: fs.readFileSync('./secrets/public-certificate.pem')
-    // };
-    const server = express();
-    const app = await NestFactory.create(AppModule, server);
+    const app = await NestFactory.create(AppModule);
     app.enableCors();
-    await app.init();
-    // server.listen(3008, () => {
-    //     console.log('server running');
-    // })
-    http.createServer(server).listen(3001);
-    // await app.listen(3001);
+    await app.listen(3001);
 }
 
 export async function initHttps(){
@@ -31,4 +24,24 @@ export async function initHttps(){
     app.enableCors();
     await app.init();
     https.createServer(httpsOptions, server).listen(3001);
+}
+
+export async function socket(){
+    // io.on('connection', function(client){
+    //     client.on('event', function(data){});
+    //     client.on('disconnect', function(){});
+    // });
+
+    console.log('3005 ing...')
+    server.listen(3005); // 注意这个不是程序的端口号：是socket的端口号
+    io.on('connection', (socket) => {
+        // console.log('a user connected');
+        console.log(6666, io)
+        socket.on('chat', (msg) => {
+            console.log(socket);
+            console.log('socketid: ' + socket.id);
+            io.emit('chat', msg);
+        });
+    });
+
 }

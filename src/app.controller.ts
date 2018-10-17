@@ -270,4 +270,15 @@ export class AppController {
       const r = await this.appService.exitGroup(groupId, userId)
       return r;
     }
+    // 注册
+   @Post('/regist')
+   async regist(@Res() R, @Body() body) {
+    console.log(body);
+    if (!body.userName) {
+      return R.json({success: false, msg: '用户名不能为空'})
+    }
+    const r = await this.appService.regist(body.userName)
+    
+    return R.status(200).json(r)
+   }
 }
