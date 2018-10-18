@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WsResponse, WebSocketServer } from '@nestjs/websockets';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
 
 @WebSocketGateway({path : '/room'})
 export class EventsGateway {
@@ -20,6 +20,9 @@ export class EventsGateway {
   @SubscribeMessage('chat')
   chat(client: any, data: any) {
     this.server.emit('chat', data);
+    console.log(222, this.server);
+    console.log(111,  this.server.io.opts.transports);
+    // console.log(JSON.stringify(this.server.transports));
   }
 
 }

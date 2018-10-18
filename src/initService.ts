@@ -36,10 +36,7 @@ export async function socket(){
     server.listen(3005); // 注意这个不是程序的端口号：是socket的端口号
     io.on('connection', (socket) => {
         // console.log('a user connected');
-        console.log(6666, io)
         socket.on('chat', (msg) => {
-            console.log(socket);
-            console.log('socketid: ' + socket.id);
             io.emit('chat', msg);
         });
     });
