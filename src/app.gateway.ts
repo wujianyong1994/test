@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WsResponse, WebSocketServer } from 
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-@WebSocketGateway({path : '/room'})
+@WebSocketGateway({path : '/room', origins: 'http://thebestguy.club'})
 export class EventsGateway {
   @WebSocketServer() server;
 
