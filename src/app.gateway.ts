@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 // @WebSocketGateway({path : '/room', origins: 'http://www.thebestguy.club'})
-@WebSocketGateway({path : '/room', origins: 'http://localhost:3000'})
+@WebSocketGateway(3006, {path : '/room', origins: 'http://localhost:3000'})
 export class EventsGateway {
   @WebSocketServer() server;
 
