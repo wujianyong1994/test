@@ -15,6 +15,6 @@ async function bootstrap() {
   }
   // const bf = fs.readFileSync('./doc.txt');
   // console.log(bf);
-  init.socket()
+  // init.socket()
 }
 bootstrap();

@@ -21,7 +21,7 @@ export async function initHttps(){
     };
     const server = express();
     const app = await NestFactory.create(AppModule, server);
-    app.enableCors({origin: 'http://localhost:3000'});
+    app.enableCors();
     await app.init();
     https.createServer(httpsOptions, server).listen(3001);
 }
