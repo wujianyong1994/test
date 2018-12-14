@@ -106,7 +106,7 @@ export class AppController {
     const sid = req.headers.sessionid;
     const userId = await redis.get(sid);
     const pageIndex = params.pageIndex;
-    const pageSize = 10;
+    const pageSize = 15;
     const r = await this.appService.listGroup(userId, pageIndex, pageSize);
     // return res.status(200).json({success: true, data: r});
     return {success: true, data: r.groups, totalPage: Math.ceil(r.totalPage / pageSize)};
